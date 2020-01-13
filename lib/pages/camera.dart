@@ -145,7 +145,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     Uint8List bytes;
     await imageFile.readAsBytes().then((value) {
       bytes = Uint8List.fromList(value);
-      print('reading of bytes is completed');
     }).catchError((onError) {
       print('Exception Error while reading audio from path:' + onError.toString());
     });

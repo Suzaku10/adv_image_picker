@@ -14,7 +14,10 @@ dependencies:
   basic_components:
     git:
       url: git://github.com/Suzaku10/basic_components.git
-  adv_camera: ^0.0.6
+  adv_camera:
+    git:
+      url: git://github.com/Suzaku10/adv_camera.git
+      ref: v1
 #  camera:
 #    git:
 #      url: git://github.com/ricnaaru/plugins.git

@@ -69,7 +69,6 @@ class _PreviewState extends State<Preview> {
 
         thumbnails.add(InkWell(
             onTap: () {
-              print("i => $i");
               setState(() {
                 controller.currentImage = i;
               });
@@ -117,7 +116,6 @@ class _PreviewState extends State<Preview> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print("ImageWithThumbnail didChangeDependencies");
   }
 }
 
