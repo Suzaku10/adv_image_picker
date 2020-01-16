@@ -30,13 +30,15 @@ class AdvImagePicker {
   static String confirm = "Confirm";
   static String cancel = "Cancel";
   static String loadingAssetName = "images/image_picker_loading.gif";
-  static FlashType defaultFlashType = FlashType.auto;
 
   static Future<List<File>> pickImagesToFile(BuildContext context,
       {bool usingCamera = true,
       bool usingGallery = true,
-        bool allowMultiple = true,
-        int maxSize}) async {
+      bool allowMultiple = true,
+      bool useFlash = true,
+      bool switchCamera = true,
+      bool useCustomView = false,
+      int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
 
     BasicComponents.loading.assetName = loadingAssetName;
@@ -60,7 +62,13 @@ class AdvImagePicker {
     }
 
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraPage(
+            enableGallery: usingGallery,
+            allowMultiple: allowMultiple,
+            useCustomView: useCustomView,
+            useFlash: useFlash,
+            switchCamera: switchCamera,
+            maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<File> files = [];
@@ -95,6 +103,9 @@ class AdvImagePicker {
       {bool usingCamera = true,
       bool usingGallery = true,
       bool allowMultiple = true,
+      bool useCustomView = false,
+      bool switchCamera = true,
+      bool useFlash = true,
       int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
 
@@ -120,7 +131,13 @@ class AdvImagePicker {
     }
 
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraPage(
+            enableGallery: usingGallery,
+            allowMultiple: allowMultiple,
+            useCustomView: useCustomView,
+            useFlash: useFlash,
+            switchCamera: switchCamera,
+            maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<ByteData> datas = [];

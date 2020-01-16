@@ -17,7 +17,7 @@ dependencies:
   adv_camera:
     git:
       url: git://github.com/Suzaku10/adv_camera.git
-      ref: v1
+      ref: v2
 #  camera:
 #    git:
 #      url: git://github.com/ricnaaru/plugins.git

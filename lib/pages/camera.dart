@@ -20,12 +20,24 @@ import 'package:path_provider/path_provider.dart';
 class CameraPage extends StatefulWidget {
   final bool allowMultiple;
   final bool enableGallery;
+  final bool useCustomView;
+  final bool useFlash;
+  final bool switchCamera;
   final int maxSize;
 
-  CameraPage({bool allowMultiple, bool enableGallery, this.maxSize})
+  CameraPage(
+      {bool allowMultiple,
+      bool enableGallery,
+      bool useCustomView,
+      bool switchCamera,
+      this.maxSize,
+      bool useFlash})
       : assert(maxSize == null || maxSize >= 0),
         this.allowMultiple = allowMultiple ?? true,
-        this.enableGallery = enableGallery ?? true;
+        this.enableGallery = enableGallery ?? true,
+        this.useFlash = useFlash ?? true,
+        this.switchCamera = switchCamera ?? true,
+        this.useCustomView = useCustomView ?? false;
 
   @override
   _CameraPageState createState() {
@@ -33,15 +45,15 @@ class CameraPage extends StatefulWidget {
   }
 }
 
-void logError(String code, String message) =>
-    print('${AdvImagePicker.error}: $code\n${AdvImagePicker.errorMessage}: $message');
+void logError(String code, String message) => print(
+    '${AdvImagePicker.error}: $code\n${AdvImagePicker.errorMessage}: $message');
 
 class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   AdvCameraController controller;
   String imagePath;
   int _currentCameraIndex = 0;
   Completer<String> takePictureCompleter;
-  FlashType flashType = FlashType.auto;
+  FlashType flashType = FlashType.off;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -49,92 +61,104 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AdvImagePicker.takePicture,
-          style: TextStyle(color: Colors.black87),
-        ),
-        centerTitle: true,
-        elevation: 0.0,
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
-      ),
-      bottomSheet: Container(
-          height: 80.0,
-          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
-          color: Colors.white,
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                AdvButton.custom(
-                  child: AdvColumn(divider: ColumnDivider(4.0), children: [
-                    Text(AdvImagePicker.rotate),
-                    Icon(Icons.switch_camera),
-                  ]),
-                  buttonSize: ButtonSize.small,
-                  primaryColor: Colors.white,
-                  accentColor: Colors.black87,
-                  onPressed: () {
-                    controller.switchCamera();
-                  },
-                ),
-                Container(
-                    margin: EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      AdvImagePicker.photo,
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.0),
-                    )),
-                AdvVisibility(
-                  visibility:
-                      widget.enableGallery ? VisibilityFlag.visible : VisibilityFlag.invisible,
-                  child: AdvButton.custom(
-                    child: AdvColumn(divider: ColumnDivider(4.0), children: [
-                      Text(AdvImagePicker.gallery),
-                      Icon(Icons.photo_album),
-                    ]),
-                    buttonSize: ButtonSize.small,
-                    primaryColor: Colors.white,
-                    accentColor: Colors.black87,
-                    onPressed: () async {
-                      if (Platform.isIOS) {
-                        bool hasPermission = await AdvImagePickerPlugin.getIosStoragePermission();
-                        if (!hasPermission) {
-                          Toast.showToast(context, "Permission denied");
-                          return null;
-                        } else {
-                          goToGallery();
-                        }
-                      } else {
-                        goToGallery();
-                      }
-                    },
-                  ),
-                ),
-              ])),
+          title: Text(
+            AdvImagePicker.takePicture,
+            style: TextStyle(color: Colors.black87),
+          ),
+          centerTitle: true,
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black87),
+          actions: widget.switchCamera
+              ? [
+                  IconButton(
+                      icon: Icon(Icons.switch_camera),
+                      onPressed: () {
+                        controller.switchCamera();
+                      })
+                ]
+              : null),
       key: _scaffoldKey,
       body: _buildWidget(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        elevation: 0.0,
-        onPressed: () {
-          takePicture().then((resultPath) async {
-            if (resultPath == null) return;
-            ByteData bytes = await _readFileByte(resultPath);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        ResultPage([ResultItem("", resultPath, data: bytes)])));
-          });
-        },
-        backgroundColor: AdvImagePicker.primaryColor,
-        highlightElevation: 0.0,
-        child: Container(
-          width: 30.0,
-          height: 30.0,
-          decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(30.0))),
-        ),
+      floatingActionButton: Stack(
+        children: <Widget>[
+          AdvVisibility(
+              visibility: widget.useFlash
+                  ? VisibilityFlag.visible
+                  : VisibilityFlag.gone,
+              child: Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: FloatingActionButton(
+                      heroTag: null,
+                      onPressed: () async {
+                        setState(() {
+                          flashType = flashType == FlashType.off
+                              ? FlashType.on
+                              : FlashType.off;
+                          controller.setFlashType(flashType);
+                        });
+                      },
+                      child: Icon(flashType == FlashType.off
+                          ? Icons.flash_on
+                          : Icons.flash_off),
+                    ),
+                  ))),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: FloatingActionButton(
+                elevation: 0.0,
+                onPressed: () {
+                  takePicture().then((resultPath) async {
+                    if (resultPath == null) return;
+                    ByteData bytes = await _readFileByte(resultPath);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ResultPage(
+                                [ResultItem("", resultPath, data: bytes)])));
+                  });
+                },
+                backgroundColor: AdvImagePicker.primaryColor,
+                highlightElevation: 0.0,
+                child: Container(
+                  width: 30.0,
+                  height: 30.0,
+                  child: Icon(Icons.camera),
+                ),
+              )),
+          AdvVisibility(
+            visibility: widget.enableGallery
+                ? VisibilityFlag.visible
+                : VisibilityFlag.gone,
+            child: Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton(
+                  heroTag: null,
+                  onPressed: () async {
+                    if (Platform.isIOS) {
+                      bool hasPermission =
+                          await AdvImagePickerPlugin.getIosStoragePermission();
+                      if (!hasPermission) {
+                        Toast.showToast(context, "Permission denied");
+                        return null;
+                      } else {
+                        goToGallery();
+                      }
+                    } else {
+                      goToGallery();
+                    }
+                  },
+                  child: Icon(Icons.photo),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -146,7 +170,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     await imageFile.readAsBytes().then((value) {
       bytes = Uint8List.fromList(value);
     }).catchError((onError) {
-      print('Exception Error while reading audio from path:' + onError.toString());
+      print('Exception Error while reading audio from path:' +
+          onError.toString());
     });
     return bytes.buffer.asByteData();
   }
@@ -155,8 +180,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) =>
-                GalleryPage(
+            builder: (BuildContext context) => GalleryPage(
                   allowMultiple: widget.allowMultiple,
                   maxSize: widget.maxSize,
                 )));
@@ -177,6 +201,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         takePictureCompleter = null;
       },
       cameraPreviewRatio: CameraPreviewRatio.r16_9,
+      useCustomRect: widget.useCustomView,
     );
   }
 
@@ -201,6 +226,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -212,6 +238,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   void _onCameraCreated(AdvCameraController controller) {
     this.controller = controller;
+
+    this.controller.setFlashType(flashType);
 
     getApplicationDocumentsDirectory().then((Directory extDir) async {
       final String dirPath = '${extDir.path}/Pictures';
