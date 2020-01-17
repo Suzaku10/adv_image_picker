@@ -202,6 +202,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       },
       cameraPreviewRatio: CameraPreviewRatio.r16_9,
       useCustomRect: widget.useCustomView,
+      flashType: flashType,
     );
   }
 
@@ -238,8 +239,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   void _onCameraCreated(AdvCameraController controller) {
     this.controller = controller;
-
-    this.controller.setFlashType(flashType);
 
     getApplicationDocumentsDirectory().then((Directory extDir) async {
       final String dirPath = '${extDir.path}/Pictures';
