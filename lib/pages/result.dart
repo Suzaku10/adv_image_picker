@@ -19,24 +19,26 @@ class _ResultPageSate extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "${AdvImagePicker.confirmation}",
-            style: TextStyle(color: Colors.black87),
-          ),
-          centerTitle: true,
-          elevation: 0.0,
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black87),
-        ),
+        appBar: AdvImagePicker.customAppBar ??
+            AppBar(
+              title: Text(
+                "${AdvImagePicker.confirmation}",
+                style: TextStyle(color: Colors.black87),
+              ),
+              centerTitle: true,
+              elevation: 0.0,
+              backgroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.black87),
+            ),
 //        bottomSheet: Container(child: Row,),
-        body: Column(children: [
-          Expanded(
-              child: Container(
-                  child: Preview(
-            imageProviders: widget.images.map((ResultItem item) {
+        body: AdvImagePicker.customButton == null
+            ? Column(children: [
+                Expanded(
+                    child: Container(
+                        child: Preview(
+                  imageProviders: widget.images.map((ResultItem item) {
 //            return Image.memory(image.buffer.asUint8List(), fit: BoxFit.cover,);
-              return MemoryImage(item.data.buffer.asUint8List());
+                    return MemoryImage(item.data.buffer.asUint8List());
 //            return ClipRect(
 //              child: PhotoView(
 //                imageProvider: MemoryImage(image.buffer.asUint8List()),
@@ -45,45 +47,83 @@ class _ResultPageSate extends State<ResultPage> {
 //                initialScale: PhotoViewComputedScale.covered,
 //              ),
 //            );
-            }).toList(),
-            currentImage: 0,
-          ))),
-          Container(
-              padding: EdgeInsets.all(8.0),
-              color: Colors.white,
-              child: AdvRow(
-                  divider: RowDivider(8.0),
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: AdvButton.custom(
-                        child: AdvColumn(
-                            divider: ColumnDivider(4.0),
-                            children: [Text("${AdvImagePicker.cancel}"), Icon(Icons.close)]),
-                        buttonSize: ButtonSize.small,
-                        primaryColor: Colors.white,
-                        accentColor: Colors.black87,
-                        onPressed: () {
-                          Navigator.pop(context);
+                  }).toList(),
+                  currentImage: 0,
+                ))),
+                Container(
+                    padding: EdgeInsets.all(8.0),
+                    color: Colors.white,
+                    child: AdvRow(
+                        divider: RowDivider(8.0),
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: AdvButton.custom(
+                              child: AdvColumn(
+                                  divider: ColumnDivider(4.0),
+                                  children: [
+                                    Text("${AdvImagePicker.cancel}"),
+                                    Icon(Icons.close)
+                                  ]),
+                              buttonSize: ButtonSize.small,
+                              primaryColor: Colors.white,
+                              accentColor: Colors.black87,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: AdvButton.custom(
+                              child: AdvColumn(
+                                  divider: ColumnDivider(4.0),
+                                  children: [
+                                    Text("${AdvImagePicker.confirm}"),
+                                    Icon(Icons.check),
+                                  ]),
+                              buttonSize: ButtonSize.small,
+                              primaryColor: Colors.white,
+                              accentColor: AdvImagePicker.primaryColor,
+                              onPressed: () {
+                                Navigator.popUntil(context,
+                                    ModalRoute.withName("AdvImagePickerHome"));
+                                if (Navigator.canPop(context))
+                                  Navigator.pop(context, widget.images);
+                              },
+                            ),
+                          ),
+                        ])),
+              ])
+            : Stack(
+                children: <Widget>[
+                  Container(
+                      child: Preview(
+                    imageProviders: widget.images.map((ResultItem item) {
+//            return Image.memory(image.buffer.asUint8List(), fit: BoxFit.cover,);
+                      return MemoryImage(item.data.buffer.asUint8List());
+//            return ClipRect(
+//              child: PhotoView(
+//                imageProvider: MemoryImage(image.buffer.asUint8List()),
+//                maxScale: PhotoViewComputedScale.covered * 2.0,
+//                minScale: PhotoViewComputedScale.contained * 0.8,
+//                initialScale: PhotoViewComputedScale.covered,
+//              ),
+//            );
+                    }).toList(),
+                    currentImage: 0,
+                  )),
+                  Positioned(
+                      bottom: MediaQuery.of(context).size.height / 1.2,
+                      child: InkWell(
+                        child: AdvImagePicker.customButton,
+                        onTap: () {
+                          Navigator.popUntil(context,
+                              ModalRoute.withName("AdvImagePickerHome"));
+                          if (Navigator.canPop(context))
+                            Navigator.pop(context, widget.images);
                         },
-                      ),
-                    ),
-                    Expanded(
-                      child: AdvButton.custom(
-                        child: AdvColumn(divider: ColumnDivider(4.0), children: [
-                          Text("${AdvImagePicker.confirm}"),
-                          Icon(Icons.check),
-                        ]),
-                        buttonSize: ButtonSize.small,
-                        primaryColor: Colors.white,
-                        accentColor: AdvImagePicker.primaryColor,
-                        onPressed: () {
-                          Navigator.popUntil(context, ModalRoute.withName("AdvImagePickerHome"));
-                          if (Navigator.canPop(context)) Navigator.pop(context, widget.images);
-                        },
-                      ),
-                    ),
-                  ])),
-        ]));
+                      ))
+                ],
+              ));
   }
 }

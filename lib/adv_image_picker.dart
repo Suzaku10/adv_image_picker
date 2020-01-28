@@ -31,6 +31,7 @@ class AdvImagePicker {
   static String loadingAssetName = "images/image_picker_loading.gif";
   static AppBar customAppBar;
   static String assets;
+  static Widget customButton;
 
   static Future<List<File>> pickImagesToFile(BuildContext context,
       {bool usingCamera = true,
