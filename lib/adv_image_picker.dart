@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:adv_camera/adv_camera.dart';
 import 'package:adv_image_picker/components/toast.dart';
 import 'package:adv_image_picker/models/result_item.dart';
 import 'package:adv_image_picker/pages/camera.dart';
@@ -30,6 +29,8 @@ class AdvImagePicker {
   static String confirm = "Confirm";
   static String cancel = "Cancel";
   static String loadingAssetName = "images/image_picker_loading.gif";
+  static AppBar customAppBar;
+  static String assets;
 
   static Future<List<File>> pickImagesToFile(BuildContext context,
       {bool usingCamera = true,
@@ -37,7 +38,8 @@ class AdvImagePicker {
       bool allowMultiple = true,
       bool useFlash = true,
       bool switchCamera = true,
-      bool useCustomView = false,
+      bool useCustomView = true,
+      String addedText,
       int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
 
@@ -66,6 +68,7 @@ class AdvImagePicker {
             enableGallery: usingGallery,
             allowMultiple: allowMultiple,
             useCustomView: useCustomView,
+            addedText: addedText,
             useFlash: useFlash,
             switchCamera: switchCamera,
             maxSize: maxSize)
@@ -105,6 +108,7 @@ class AdvImagePicker {
       bool allowMultiple = true,
       bool useCustomView = false,
       bool switchCamera = true,
+      String addedText,
       bool useFlash = true,
       int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
@@ -137,6 +141,7 @@ class AdvImagePicker {
             useCustomView: useCustomView,
             useFlash: useFlash,
             switchCamera: switchCamera,
+            addedText: addedText,
             maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 

@@ -9,8 +9,6 @@ import 'package:adv_image_picker/models/result_item.dart';
 import 'package:adv_image_picker/pages/gallery.dart';
 import 'package:adv_image_picker/pages/result.dart';
 import 'package:adv_image_picker/plugins/adv_image_picker_plugin.dart';
-import 'package:basic_components/components/adv_button.dart';
-import 'package:basic_components/components/adv_column.dart';
 import 'package:basic_components/components/adv_loading_with_barrier.dart';
 import 'package:basic_components/components/adv_visibility.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +22,7 @@ class CameraPage extends StatefulWidget {
   final bool useFlash;
   final bool switchCamera;
   final int maxSize;
+  final String addedText;
 
   CameraPage(
       {bool allowMultiple,
@@ -31,7 +30,8 @@ class CameraPage extends StatefulWidget {
       bool useCustomView,
       bool switchCamera,
       this.maxSize,
-      bool useFlash})
+      bool useFlash,
+      this.addedText})
       : assert(maxSize == null || maxSize >= 0),
         this.allowMultiple = allowMultiple ?? true,
         this.enableGallery = enableGallery ?? true,
@@ -60,24 +60,25 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            AdvImagePicker.takePicture,
-            style: TextStyle(color: Colors.black87),
-          ),
-          centerTitle: true,
-          elevation: 0.0,
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black87),
-          actions: widget.switchCamera
-              ? [
-                  IconButton(
-                      icon: Icon(Icons.switch_camera),
-                      onPressed: () {
-                        controller.switchCamera();
-                      })
-                ]
-              : null),
+      appBar: AdvImagePicker.customAppBar ??
+          AppBar(
+              title: Text(
+                AdvImagePicker.takePicture,
+                style: TextStyle(color: Colors.black87),
+              ),
+              centerTitle: true,
+              elevation: 0.0,
+              backgroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.black87),
+              actions: widget.switchCamera
+                  ? [
+                      IconButton(
+                          icon: Icon(Icons.switch_camera),
+                          onPressed: () {
+                            controller.switchCamera();
+                          })
+                    ]
+                  : null),
       key: _scaffoldKey,
       body: _buildWidget(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -126,7 +127,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: Container(
                   width: 30.0,
                   height: 30.0,
-                  child: Icon(Icons.camera),
+                  child: AdvImagePicker.assets == null
+                      ? Icon(Icons.camera)
+                      : Image(
+                          image: AssetImage(AdvImagePicker.assets),
+                          fit: BoxFit.fill),
                 ),
               )),
           AdvVisibility(
@@ -203,6 +208,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       cameraPreviewRatio: CameraPreviewRatio.r16_9,
       useCustomRect: widget.useCustomView,
       flashType: flashType,
+      addedText: widget.addedText,
     );
   }
 

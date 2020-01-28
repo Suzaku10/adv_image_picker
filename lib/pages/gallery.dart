@@ -60,7 +60,8 @@ class _GalleryPageState extends State<GalleryPage> {
       }).toList();
     } on PlatformException catch (e) {
       if (_scaffoldKey.currentState.mounted)
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(e.message)));
+        _scaffoldKey.currentState
+            ?.showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -103,14 +104,17 @@ class _GalleryPageState extends State<GalleryPage> {
                 loopItem.albumId == albumId && loopItem.filePath == assetId)
             .data = data;
 
-        if (images.where((ResultItem loopItem) => loopItem.data != null).length ==
+        if (images
+                .where((ResultItem loopItem) => loopItem.data != null)
+                .length ==
             _selectedImageCount) {
           setState(() {
             _processing = false;
           });
 
           var page = ResultPage(images);
-          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => page));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (BuildContext context) => page));
         }
       }, maxSize: widget.maxSize);
     }
@@ -133,48 +137,53 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
-        elevation: 0.0,
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
-        actions: (widget.allowMultiple)
-            ? [
-                IconButton(
-                  onPressed: () {
-                    toggleMultipleMode();
-                  },
-                  icon: Icon(
-                    _multipleMode ? Icons.photo : Icons.photo_library,
-                    color: Colors.black87,
-                  ),
-                )
-              ]
-            : [],
-        title: DropdownButton(
-            isDense: true,
-            items: albums == null || albums.length == 0
-                ? [DropdownMenuItem(child: Text(""), value: "")]
-                : albums.map((Album album) {
-                    return DropdownMenuItem(child: Text("${album.name}"), value: album.name);
-                  }).toList(),
-            value: albums == null || _selectedAlbum == null ? "" : _selectedAlbum.name,
-            onChanged: (albumName) {
-              if (albumName == null || albums.length == 0) return;
+      appBar: AdvImagePicker.customAppBar ??
+          AppBar(
+            elevation: 0.0,
+            centerTitle: false,
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black87),
+            actions: (widget.allowMultiple)
+                ? [
+                    IconButton(
+                      onPressed: () {
+                        toggleMultipleMode();
+                      },
+                      icon: Icon(
+                        _multipleMode ? Icons.photo : Icons.photo_library,
+                        color: Colors.black87,
+                      ),
+                    )
+                  ]
+                : [],
+            title: DropdownButton(
+                isDense: true,
+                items: albums == null || albums.length == 0
+                    ? [DropdownMenuItem(child: Text(""), value: "")]
+                    : albums.map((Album album) {
+                        return DropdownMenuItem(
+                            child: Text("${album.name}"), value: album.name);
+                      }).toList(),
+                value: albums == null || _selectedAlbum == null
+                    ? ""
+                    : _selectedAlbum.name,
+                onChanged: (albumName) {
+                  if (albumName == null || albums.length == 0) return;
 
-              setState(() {
-                _selectedAlbum = albums.firstWhere((Album album) => album.name == albumName);
-              });
+                  setState(() {
+                    _selectedAlbum = albums
+                        .firstWhere((Album album) => album.name == albumName);
+                  });
 
-              _controller.reloadAlbum(_selectedAlbum.identifier);
-            }),
-      ),
+                  _controller.reloadAlbum(_selectedAlbum.identifier);
+                }),
+          ),
       body: AdvLoadingWithBarrier(
         isProcessing: _processing,
         content: (BuildContext context) => AdvFutureBuilder(
-              futureExecutor: _loadAll,
-              widgetBuilder: _buildWidget,
-            ),
+          futureExecutor: _loadAll,
+          widgetBuilder: _buildWidget,
+        ),
       ),
     );
   }
@@ -263,8 +272,8 @@ class TaskManager {
   }
 
   void remove(LoadItem item) {
-    items.removeWhere(
-        (loopItem) => loopItem.albumId == item.albumId && loopItem.assetId == item.assetId);
+    items.removeWhere((loopItem) =>
+        loopItem.albumId == item.albumId && loopItem.assetId == item.assetId);
   }
 
   _tryRender(LoadItem item) {
