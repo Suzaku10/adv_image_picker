@@ -96,11 +96,13 @@ class _ResultPageSate extends State<ResultPage> {
               ])
             : Stack(
                 children: <Widget>[
-                  Container(
-                      child: Preview(
-                    imageProviders: widget.images.map((ResultItem item) {
+                  AdvColumn(children: <Widget>[
+                    Expanded(
+                      child: Container(
+                          child: Preview(
+                        imageProviders: widget.images.map((ResultItem item) {
 //            return Image.memory(image.buffer.asUint8List(), fit: BoxFit.cover,);
-                      return MemoryImage(item.data.buffer.asUint8List());
+                          return MemoryImage(item.data.buffer.asUint8List());
 //            return ClipRect(
 //              child: PhotoView(
 //                imageProvider: MemoryImage(image.buffer.asUint8List()),
@@ -109,9 +111,11 @@ class _ResultPageSate extends State<ResultPage> {
 //                initialScale: PhotoViewComputedScale.covered,
 //              ),
 //            );
-                    }).toList(),
-                    currentImage: 0,
-                  )),
+                        }).toList(),
+                        currentImage: 0,
+                      )),
+                    )
+                  ]),
                   Positioned(
                       bottom: MediaQuery.of(context).size.height / 1.2,
                       child: InkWell(
