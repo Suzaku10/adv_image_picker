@@ -116,17 +116,18 @@ class _ResultPageSate extends State<ResultPage> {
                       )),
                     )
                   ]),
-                  Positioned(
-                      bottom: MediaQuery.of(context).size.height / 1.2,
-                      child: InkWell(
-                        child: AdvImagePicker.customButton,
-                        onTap: () {
-                          Navigator.popUntil(context,
-                              ModalRoute.withName("AdvImagePickerHome"));
-                          if (Navigator.canPop(context))
-                            Navigator.pop(context, widget.images);
-                        },
-                      ))
+                  Align(
+                    alignment: Alignment(0.0, 0.6),
+                    child: InkWell(
+                      child: AdvImagePicker.customButton,
+                      onTap: () {
+                        Navigator.popUntil(
+                            context, ModalRoute.withName("AdvImagePickerHome"));
+                        if (Navigator.canPop(context))
+                          Navigator.pop(context, widget.images);
+                      },
+                    ),
+                  )
                 ],
               ));
   }
