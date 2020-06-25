@@ -18,6 +18,7 @@ dependencies:
     git:
       url: git://github.com/Suzaku10/adv_camera.git
       ref: v2
+  persistent_bottom_nav_bar: ^1.5.5
 #  camera:
 #    git:
 #      url: git://github.com/ricnaaru/plugins.git
