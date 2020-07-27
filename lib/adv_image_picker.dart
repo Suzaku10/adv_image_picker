@@ -10,7 +10,7 @@ import 'package:basic_components/basic_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.widget.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 
 class AdvImagePicker {
@@ -85,7 +85,7 @@ class AdvImagePicker {
         context,
         settings: RouteSettings(name: 'AdvImagePickerHome'),
         screen: advImagePickerHome,
-        platformSpecific: false,
+//        platformSpecific: false,
         withNavBar: false,
       );
     } else {
