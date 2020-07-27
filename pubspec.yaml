@@ -13,10 +13,10 @@ dependencies:
 
   basic_components:
     git:
-      url: git://github.com/Suzaku10/basic_components.git
+      url: https://github.com/Suzaku10/basic_components.git
   adv_camera:
     git:
-      url: git://github.com/Suzaku10/adv_camera.git
+      url: https://github.com/Suzaku10/adv_camera.git
       ref: v2
   persistent_bottom_nav_bar: ^1.5.5
 #  camera:
