@@ -10,8 +10,6 @@ import 'package:basic_components/basic_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.widget.dart';
-
 
 class AdvImagePicker {
   static Color lightGrey = Color(0xffc6c6c6);
@@ -42,7 +40,6 @@ class AdvImagePicker {
       bool useFlash = true,
       bool switchCamera = true,
       bool useCustomView = true,
-      bool useBottomBar = false,
       String addedText,
       int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
@@ -80,21 +77,12 @@ class AdvImagePicker {
 
     List<File> files = [];
     List<ResultItem> images;
-    if(!useBottomBar) {
-      images = await pushNewScreenWithRouteSettings(
+
+    images = await Navigator.push(
         context,
-        settings: RouteSettings(name: 'AdvImagePickerHome'),
-        screen: advImagePickerHome,
-        platformSpecific: false,
-        withNavBar: false,
-      );
-    } else {
-      images = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => advImagePickerHome,
-              settings: RouteSettings(name: "AdvImagePickerHome")));
-    }
+        MaterialPageRoute(
+            builder: (BuildContext context) => advImagePickerHome,
+            settings: RouteSettings(name: "AdvImagePickerHome")));
 
     if (images == null) return [];
 
